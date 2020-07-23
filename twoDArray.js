@@ -1,96 +1,82 @@
+function process_input(input) {
+  //su código acá
+  var params = input.split(":");
 
-function make2DArray(cols, rows) {
-  let arr = new Array(cols);
-  for (let i = 0; i < arr.length; i++) {
-    arr[i] = new Array(rows);
-  }
-  return arr;
+  params[0] = Function('"use strict"; return ' + params[0])();
+  params[1] = parseInt(params[1]);
+  
+  console.table(params[0]);
+  
+  return board_next_step(params[0], params[1]);
 }
 
-let grid;
-let cols;
-let rows;
-let resolution = 20;
 
-function setup() {
-  createCanvas(600, 400);
-
-  cols = width / resolution;
-  rows = height / resolution;
-
-  grid = make2DArray(cols, rows);
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      grid[i][j] = floor(random(2));
-    }
-  }
-}
-
-function draw() {
-  background(0);
-  
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      let x = i * resolution;
-      let y = j * resolution;
-      if (grid[i][j] == 1) {
-        fill(0);
-        stroke(255);
-        rect(x, y, resolution - 1, resolution - 1);
-      } else {
-        fill(255);
-        stroke(0);
-        rect(x, y, resolution - 1, resolution - 1);
-      }
-    }
-  }
-  
-  let next = make2DArray(cols, rows);
-
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      
-      let state = grid[i][j];
-
-
-      // let sum = 0;
-      let neighbors = countNeighbors(grid, i, j);
-      
-      if (state == 0 && neighbors == 3) {
-        
-        next[i][j] = 1;
-      } else if (state == 1 && (neighbors < 2 || neighbors > 3)) {
-        next[i][j] = 0;
-      } else {
-        next[i][j] = state;
-      }
-
-    }
+function board_next_step(initial_board, steps) {
+  let count = 0;
+  let nexto = [];
+  for(let i = 0; i < initial_board.length; i++) {
+    nexto[i] = initial_board[i].slice();
   }
 
-  setTimeout(() => {
-    grid = next;
+  while (count < steps) {
+    console.log('count', count);
+    let aux = [];
+    for(let i = 0; i < nexto.length; i++) {
+      aux[i] = nexto[i].slice();
+    }
+    console.table(aux);
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     
-  }, 400);
+    for (let i = 0; i < aux.length; i++) {
+      for (let j = 0; j < aux[0].length; j++) {
+        let state = aux[i][j];
+        
+        console.log(`aux[${i}][${j}]: `, aux[i][j]);
+        console.log("aux entrada", aux);
 
+        const neighbors = countNeighbors(aux, i, j);
+        console.log("neighbors", neighbors);
+
+        if (state == 0 && neighbors == 3) {
+          nexto[i][j] = 1;
+        } else if (state == 1 && (neighbors < 2 || neighbors > 3)) {
+          nexto[i][j] = 0;
+        } else {
+          nexto[i][j] = state;
+        }
+      }
+    }
+    count++;
+  }
+  const result = nexto.join();
+  return result;
 }
 
-function countNeighbors(grid, x, y) {
+const countNeighbors = (grid, x, y) => {
+  const numberRows = grid.length;
+  const numberCols = grid[0].length;
+
   let sum = 0;
+  
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
+      const row = (x + i + numberRows) % numberRows;
+      const col = (y + j + numberCols) % numberCols;
+      if(Math.abs(col - y) < 2) {
+        if(Math.abs(row -x) < 2) {
+          console.log(`grid[${row}][${col}]: `, grid[row][col]);
       
-      let col = (x + i + cols) % cols;
-      let row = (y + j + rows) % rows;
-      if(grid[col][row] == 1) {
-        sum += grid[col][row];
+          sum += grid[row][col];
 
+        }
       }
+  
     }
   }
   sum -= grid[x][y];
   return sum;
 }
 
-// setup();
-// console.table(grid);
+const input = "[[1,0,0],[0,1,1],[1,1,0]]:1";
+
+console.log(process_input(input));
