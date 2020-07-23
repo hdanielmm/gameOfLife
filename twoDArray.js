@@ -28,7 +28,7 @@ function setup() {
 
 function draw() {
   background(0);
-  
+
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       let x = i * resolution;
@@ -44,20 +44,20 @@ function draw() {
       }
     }
   }
-  
+
   let next = make2DArray(cols, rows);
 
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
-      
+
       let state = grid[i][j];
 
 
       // let sum = 0;
       let neighbors = countNeighbors(grid, i, j);
-      
+
       if (state == 0 && neighbors == 3) {
-        
+
         next[i][j] = 1;
       } else if (state == 1 && (neighbors < 2 || neighbors > 3)) {
         next[i][j] = 0;
@@ -70,7 +70,7 @@ function draw() {
 
   setTimeout(() => {
     grid = next;
-    
+
   }, 400);
 
 }
@@ -79,13 +79,10 @@ function countNeighbors(grid, x, y) {
   let sum = 0;
   for (let i = -1; i < 2; i++) {
     for (let j = -1; j < 2; j++) {
-      
+
       let col = (x + i + cols) % cols;
       let row = (y + j + rows) % rows;
-      if(grid[col][row] == 1) {
-        sum += grid[col][row];
-
-      }
+      sum += grid[col][row];
     }
   }
   sum -= grid[x][y];
